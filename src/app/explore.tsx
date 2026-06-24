@@ -1,6 +1,7 @@
+import { useDemoQuery } from '@/hooks/use-demo-query';
 import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
-import { Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ExternalLink } from '@/components/external-link';
@@ -10,6 +11,27 @@ import { Collapsible } from '@/components/ui/collapsible';
 import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+
+function GraphQLDemo() {
+  const { loading, error, data } = useDemoQuery();
+
+  return (
+    <ThemedView type="backgroundElement" style={styles.graphqlContainer}>
+      <ThemedText type="subtitle">GraphQL Demo</ThemedText>
+      {loading && <ActivityIndicator />}
+      {error && (
+        <ThemedText style={styles.errorText}>
+          Error: {error.message}
+        </ThemedText>
+      )}
+      {data && (
+        <ThemedText type="small">
+          Connected! Server responded with: {JSON.stringify(data)}
+        </ThemedText>
+      )}
+    </ThemedView>
+  );
+}
 
 export default function TabTwoScreen() {
   const safeAreaInsets = useSafeAreaInsets();
@@ -119,6 +141,7 @@ export default function TabTwoScreen() {
             </ThemedText>
           </Collapsible>
         </ThemedView>
+        <GraphQLDemo />
         {Platform.OS === 'web' && <WebBadge />}
       </ThemedView>
     </ScrollView>
@@ -126,6 +149,15 @@ export default function TabTwoScreen() {
 }
 
 const styles = StyleSheet.create({
+  graphqlContainer: {
+    padding: Spacing.four,
+    marginHorizontal: Spacing.four,
+    borderRadius: Spacing.four,
+    gap: Spacing.two,
+  },
+  errorText: {
+    color: 'red',
+  },
   scrollView: {
     flex: 1,
   },
