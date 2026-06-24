@@ -1,56 +1,92 @@
-# Welcome to your Expo app 👋
+# MyApp
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+An [Expo](https://expo.dev) app (SDK 56) with file-based routing, native tabs, and Apollo Client v4 GraphQL integration.
 
-## Get started
+## Branches
 
-1. Install dependencies
+| Branch | Description |
+|---|---|
+| `main` | Base Expo template with tabs, theming, and animations |
+| `graphql` | Adds Apollo Client v4, GraphQL demo hook, and typed queries |
 
-   ```bash
-   npm install
-   ```
+## Project Structure
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+src/
+├── app/                    # Expo Router file-based routes
+│   ├── _layout.tsx         # Root layout (tabs navigator)
+│   ├── index.tsx           # Home tab
+│   └── explore.tsx         # Explore tab
+├── components/             # Reusable UI components
+│   ├── ui/
+│   │   └── collapsible.tsx # Animated accordion
+│   ├── animated-icon.tsx / .web.tsx
+│   ├── app-tabs.tsx / .web.tsx
+│   ├── external-link.tsx
+│   ├── hint-row.tsx
+│   ├── themed-text.tsx
+│   ├── themed-view.tsx
+│   └── web-badge.tsx
+├── constants/
+│   └── theme.ts            # Colors, fonts, spacing
+├── hooks/
+│   ├── use-color-scheme.ts / .web.tsx
+│   └── use-theme.ts
+├── lib/                    # (empty on main)
+├── services/               # (empty on main)
+├── store/                  # (empty on main)
+├── types/                  # (empty on main)
+└── global.css              # Web CSS custom properties
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Get Started
 
-### Other setup steps
+```bash
+npm install
+npm run android   # or: npm run ios, npm run web
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## GraphQL (graphql branch)
 
-## Learn more
+Configure your endpoint in `src/lib/apollo_client.ts`:
 
-To learn more about developing your project with Expo, look at the following resources:
+```ts
+const httpLink = new HttpLink({
+  uri: "https://your-api.com/graphql",
+});
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Write typed queries using hooks:
 
-## Join the community
+```ts
+import { gql } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
+import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 
-Join our community of developers creating universal apps.
+interface Data { ... }
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+const QUERY: TypedDocumentNode<Data> = gql`query { ... }`;
+
+function Component() {
+  const { loading, error, data } = useQuery(QUERY);
+}
+```
+
+A working demo is on the **Explore** tab (via `src/hooks/use-demo-query.ts`).
+
+## Scripts
+
+| Script | Description |
+|---|---|
+| `npm start` | Start Expo dev server |
+| `npm run android` | Start + launch on Android emulator |
+| `npm run ios` | Start + launch on iOS simulator |
+| `npm run web` | Start + open in browser |
+| `npm run lint` | Run ESLint |
+| `npm run reset-project` | Reset to blank project |
+
+## Platform Support
+
+- **Android** — native tabs via `expo-router/unstable-native-tabs`
+- **iOS** — native tabs via `expo-router/unstable-native-tabs`
+- **Web** — custom tab UI via `expo-router/ui`
